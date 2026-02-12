@@ -151,3 +151,6 @@ The app includes an endpoint at `/.well-known/microsoft-identity-association.jso
   }
 }
 ```
+
+[![License](https://img.shields.io/badge/License-GNU-blue.svg)](LICENSE.md)
+[![Privacy Policy](https://img.shields.io/badge/Privacy-Policy-green.svg)](PRIVACY_POLICY.md)
