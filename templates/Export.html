@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft To Do Exporter - Complete</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #0078D4;
+        }
+        .success {
+            background-color: #f0f8f0;
+            border: 1px solid #28a745;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .download-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+        .stats {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Microsoft To Do Exporter</h1>
+    <div class="success">
+        <h2>✅ Export Complete!</h2>
+        <p>Your Microsoft To Do data has been successfully exported.</p>
+    </div>
+
+    <div class="stats">
+        <h3>Export Summary</h3>
+        <p><strong>Lists:</strong> {{LIST_COUNT}}</p>
+        <p><strong>Total Tasks:</strong> {{TOTAL_TASKS}}</p>
+        <p><strong>Export Date:</strong> {{EXPORT_DATE}}</p>
+        <p><strong>Filename:</strong> {{FILENAME}}</p>
+    </div>
+
+    <button class="download-btn" onclick="downloadData()">Download Backup File</button>
+
+    <script>
+        // The JSON data as base64 encoded string
+        const jsonDataBase64 = '{{JSON_BASE64}}';
+
+        // Function to download the data
+        function downloadData() {
+            // Decode base64 and handle UTF-8 properly
+            const jsonData = decodeURIComponent(escape(atob(jsonDataBase64)));
+            const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonData);
+
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = '{{FILENAME}}';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Auto-download after page loads
+        window.addEventListener('load', function() {
+            setTimeout(downloadData, 1000);
+        });
+    </script>
+</body>
+</html>
