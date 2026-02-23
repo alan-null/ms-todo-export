@@ -96,60 +96,50 @@ The app includes an endpoint at `/.well-known/microsoft-identity-association.jso
 
 ## Exported Data Format
 
+The downloaded file is plain JSON containing an array of list objects. Each list object includes its Graph properties and a `tasks` array with the tasks for that list.
+
+Example:
+
 ```json
-{
-  "exportDate": "2026-02-11T00:00:00Z",
-  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#me/todo",
-  "lists": {
-    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#me/todo/lists",
-    "@odata.count": 1,
-    "value": [
+[
+  {
+    "@odata.etag": "W/\"etag-list-example-1\"",
+    "id": "example-list-id-1",
+    "displayName": "Example List",
+    "isOwner": true,
+    "isShared": false,
+    "wellknownListName": "defaultList",
+    "createdDateTime": "2026-02-01T00:00:00Z",
+    "lastModifiedDateTime": "2026-02-11T00:00:00Z",
+    "tasks": [
       {
-        "@odata.etag": "W/\"etag-list-example-1\"",
-        "id": "example-list-id-1",
-        "displayName": "Example List",
-        "isOwner": true,
-        "isShared": false,
-        "wellknownListName": "defaultList",
-        "createdDateTime": "2026-02-01T00:00:00Z",
-        "lastModifiedDateTime": "2026-02-11T00:00:00Z"
+        "@odata.etag": "W/\"etag-task-example-1\"",
+        "id": "example-task-id-1",
+        "title": "Example Task 1",
+        "body": {
+          "content": "Example task details.",
+          "contentType": "text"
+        },
+        "bodyLastModifiedDateTime": "2026-02-02T08:00:00Z",
+        "status": "notStarted",
+        "importance": "normal",
+        "createdDateTime": "2026-02-01T12:00:00Z",
+        "lastModifiedDateTime": "2026-02-11T12:00:00Z",
+        "completedDateTime": null,
+        "dueDateTime": {
+          "dateTime": "2026-02-15T17:00:00",
+          "timeZone": "UTC"
+        },
+        "reminderDateTime": null,
+        "isReminderOn": false,
+        "recurrence": null,
+        "categories": [],
+        "linkedResources": [],
+        "attachments": []
       }
     ]
-  },
-  "tasks": {
-    "example-list-id-1": {
-      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#me/todo/lists('example-list-id-1')/tasks",
-      "@odata.count": 1,
-      "value": [
-        {
-          "@odata.etag": "W/\"etag-task-example-1\"",
-          "id": "example-task-id-1",
-          "title": "Example Task 1",
-          "body": {
-            "content": "Example task details.",
-            "contentType": "text"
-          },
-          "bodyLastModifiedDateTime": "2026-02-02T08:00:00Z",
-          "status": "notStarted",
-          "importance": "normal",
-          "createdDateTime": "2026-02-01T12:00:00Z",
-          "lastModifiedDateTime": "2026-02-11T12:00:00Z",
-          "completedDateTime": null,
-          "dueDateTime": {
-            "dateTime": "2026-02-15T17:00:00",
-            "timeZone": "UTC"
-          },
-          "reminderDateTime": null,
-          "isReminderOn": false,
-          "recurrence": null,
-          "categories": [],
-          "linkedResources": [],
-          "attachments": []
-        }
-      ]
-    }
   }
-}
+]
 ```
 
 [![License](https://img.shields.io/badge/License-GNU-blue.svg)](LICENSE.md)

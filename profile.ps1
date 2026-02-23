@@ -34,12 +34,27 @@ function Get-AccessToken {
     return $token.access_token
 }
 
-function Invoke-Graph {
-    param($Uri, $Token)
+function Invoke-GraphGet {
+    param([string]$Token, [string]$Url)
 
-    Invoke-RestMethod `
-        -Uri $Uri `
-        -Headers @{ Authorization = "Bearer $Token" }
+    $headers = @{ Authorization = "Bearer $Token" }
+    $results = @()
+
+    $nextUrl = $Url
+    do {
+        $page = Invoke-RestMethod -Method Get -Uri $nextUrl -Headers $headers
+        if ($null -ne $page.value) {
+            $results += $page.value
+        }
+        if ($page.PSObject.Properties.Name.Contains('@odata.nextLink')) {
+            $nextUrl = $page.'@odata.nextLink'
+        }
+        else {
+            $nextUrl = $null
+        }
+    } while ($nextUrl)
+
+    Write-Output $results -NoEnumerate
 }
 function Get-HtmlTemplate {
     param($TemplateName, $Replacements = @{})
@@ -73,9 +88,9 @@ function Render-ErrorResponse {
     if (-not $Details) { $detailsClass = 'hidden' }
 
     $replacements = @{
-        "TITLE" = $Title
-        "MESSAGE" = $Message
-        "DETAILS" = $Details
+        "TITLE"         = $Title
+        "MESSAGE"       = $Message
+        "DETAILS"       = $Details
         "DETAILS_CLASS" = $detailsClass
     }
 
@@ -87,8 +102,8 @@ function Render-ErrorResponse {
     }
 
     Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
-        StatusCode  = $StatusCode
-        ContentType = "text/html; charset=utf-8"
-        Body        = $html
-    })
+            StatusCode  = $StatusCode
+            ContentType = "text/html; charset=utf-8"
+            Body        = $html
+        })
 }

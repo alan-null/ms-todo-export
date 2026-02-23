@@ -20,28 +20,22 @@ try {
     $base = "https://graph.microsoft.com/v1.0"
 
     Write-Host "Fetching Microsoft To Do lists..."
-    $lists = Invoke-Graph "$base/me/todo/lists" $token
+    $lists = Invoke-GraphGet -Token $token -Url "$base/me/todo/lists/delta"
 
-    # Build result object
-    $result = @{
-        exportDate = (Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
-        lists      = $lists.value
-        tasks      = @{}
-    }
-
-    # Fetch tasks for each list
-    foreach ($list in $lists.value) {
+    # Fetch tasks for each list and embed them
+    foreach ($list in $lists) {
         Write-Host "Fetching tasks for list: $($list.displayName) ($($list.id))"
-        Start-Sleep -Milliseconds 300  # Rate limiting
+        Start-Sleep -Milliseconds 100  # Rate limiting
 
-        $tasks = Invoke-Graph "$base/me/todo/lists/$($list.id)/tasks" $token
-        $result.tasks[$list.id] = $tasks.value
+        $list | Add-Member -NotePropertyName 'tasks' -NotePropertyValue @() -Force
+        $list.tasks = Invoke-GraphGet -Token $token -Url "$base/me/todo/lists/$($list.id)/tasks"
+        Write-Host "Got $($list.tasks.Count) tasks for list '$($list.displayName)'"
     }
 
-    Write-Host "Export completed successfully. Total lists: $($lists.value.Count)"
+    Write-Host "Export completed successfully. Total lists: $($lists.Count)"
 
     # Convert to JSON
-    $json = $result | ConvertTo-Json -Depth 100
+    $json = $lists | ConvertTo-Json -Depth 100
 
     # Base64 encode the JSON for safe embedding
     $jsonBase64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($json))
@@ -51,9 +45,9 @@ try {
     $filename = "microsoft-todo-backup-$timestamp.json"
 
     # Calculate stats
-    $listCount = $result.lists.Count
-    $totalTasks = ($result.tasks.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum
-    $exportDate = $result.exportDate
+    $listCount = $lists.Count
+    $totalTasks = ($lists | ForEach-Object { $_.tasks.Count } | Measure-Object -Sum).Sum
+    $exportDate = (Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
 
     # Create HTML response with embedded download
     $replacements = @{
